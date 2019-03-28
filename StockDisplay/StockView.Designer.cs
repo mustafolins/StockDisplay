@@ -34,11 +34,14 @@
             this.Go = new System.Windows.Forms.Button();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.SymbolToLoad = new System.Windows.Forms.TextBox();
+            this.PredictionLabel = new System.Windows.Forms.Label();
+            this.TommorowPredictionLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
             // Go
             // 
+            this.Go.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Go.Location = new System.Drawing.Point(713, 12);
             this.Go.Name = "Go";
             this.Go.Size = new System.Drawing.Size(75, 23);
@@ -49,6 +52,9 @@
             // 
             // chart1
             // 
+            this.chart1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
@@ -67,17 +73,38 @@
             // 
             // SymbolToLoad
             // 
+            this.SymbolToLoad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SymbolToLoad.Location = new System.Drawing.Point(607, 12);
             this.SymbolToLoad.Name = "SymbolToLoad";
             this.SymbolToLoad.Size = new System.Drawing.Size(100, 20);
             this.SymbolToLoad.TabIndex = 2;
             this.SymbolToLoad.Text = "GOOG";
             // 
+            // PredictionLabel
+            // 
+            this.PredictionLabel.AutoSize = true;
+            this.PredictionLabel.Location = new System.Drawing.Point(12, 9);
+            this.PredictionLabel.Name = "PredictionLabel";
+            this.PredictionLabel.Size = new System.Drawing.Size(100, 13);
+            this.PredictionLabel.TabIndex = 3;
+            this.PredictionLabel.Text = "Today\'s Prediction: ";
+            // 
+            // TommorowPredictionLabel
+            // 
+            this.TommorowPredictionLabel.AutoSize = true;
+            this.TommorowPredictionLabel.Location = new System.Drawing.Point(12, 25);
+            this.TommorowPredictionLabel.Name = "TommorowPredictionLabel";
+            this.TommorowPredictionLabel.Size = new System.Drawing.Size(109, 13);
+            this.TommorowPredictionLabel.TabIndex = 4;
+            this.TommorowPredictionLabel.Text = "Tomorrows Prediction";
+            // 
             // StockView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.TommorowPredictionLabel);
+            this.Controls.Add(this.PredictionLabel);
             this.Controls.Add(this.SymbolToLoad);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.Go);
@@ -95,6 +122,8 @@
         private System.Windows.Forms.Button Go;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.TextBox SymbolToLoad;
+        private System.Windows.Forms.Label PredictionLabel;
+        private System.Windows.Forms.Label TommorowPredictionLabel;
     }
 }
 
