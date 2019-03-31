@@ -71,6 +71,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CsvUtilities.cs" />
+    <Compile Include="SharpLearningUtility.cs" />
     <Compile Include="StockPoint.cs" />
     <Compile Include="StockView.cs">
       <SubType>Form</SubType>
