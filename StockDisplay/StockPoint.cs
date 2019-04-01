@@ -17,6 +17,8 @@ namespace StockDisplay
         [JsonProperty("5. volume")]
         public string Volume { get; set; }
         public DateTime Date { get; set; }
+        public double MovingAverageTen { get; set; }
+        public double MovingAverageThirty { get; set; }
 
         public IEnumerable<double> GetValues()
         {

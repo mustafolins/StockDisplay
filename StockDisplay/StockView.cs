@@ -22,61 +22,79 @@ namespace StockDisplay
 {
     public partial class StockView : Form
     {
+        public static List<StockPoint> StockPoints { get; set; }
+
         public StockView()
         {
             InitializeComponent();
         }
 
-        private void Go_Click(object sender, EventArgs e)
+        private async void Go_ClickAsync(object sender, EventArgs e)
         {
             CurrentProgress.Show();
-            Task.Run(() => { RetrieveStockDataAndTrainAI(); });
+            foreach (var series in chart1.Series)
+            {
+                series.Points.Clear();
+            }
+
+            GetStockPoints();
+
+            // add data points to chart 
+            UpdateChart(StockPoints);
+
+            var firstResult = await Task.Run<double>(() => 
+            {
+                return RetrieveStockDataAndTrainAI((PredictionLabel, TommorowPredictionLabel), Convert.ToInt32(Pattern1LengthUpDown.Value));
+            });
+            var secondResult = await Task.Run<double>(() => 
+            {
+                return RetrieveStockDataAndTrainAI((PredictionLabel2, TomorrowsPredictionLabel2), Convert.ToInt32(Pattern2LenthUpDown.Value));
+            });
+            var thirdResult = await Task.Run<double>(() => 
+            {
+                return RetrieveStockDataAndTrainAI((PredictionLabel3, TomorrowsPredictionLabel3), Convert.ToInt32(Pattern3LengthUpDown.Value));
+            });
+
+            var average = (firstResult + secondResult + thirdResult) / 3;
+
+            AveragePredictionLabel.Text = $"Average Percent: {Math.Round(average, 5)}";
+            ExpectedChangeLabel.Text = $"Expected Close: {Math.Round(average * double.Parse(StockPoints.Last().Close), 3)}";
         }
 
-        private void RetrieveStockDataAndTrainAI()
+        private double RetrieveStockDataAndTrainAI((Label, Label) labels, int size)
         {
             // todo: add some more support for the alphavantage api
+
+            if (StockPoints.Count() == 0)
+            {
+                MessageBox.Show($"Stock data not found for {SymbolToLoad.Text}",
+                    "No Stock Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return 0.0;
+            }
+
+            // save csv and train ai and predict next closing price
+            return SharpLearningUtility.PredictNextDataPoint(
+                CsvUtilities.CreateTrainingDataFile(StockPoints, this, size), (labels.Item1, labels.Item2));
+        }
+
+        private void GetStockPoints()
+        {
             // make request
             string responseString = GetStockData();
 
             // parse response
             var responseJobj = JObject.Parse(responseString);
             // get the points and sort them.
-            var dataPoints = GetDataPoints(responseJobj).OrderBy(sp => sp.Date);
-
-            if (dataPoints.Count() == 0)
-            {
-                MessageBox.Show($"Stock data not found for {SymbolToLoad.Text}",
-                    "No Stock Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // add data points to chart 
-            if (chart1.InvokeRequired)
-            {
-                Invoke(new MethodInvoker(
-                    delegate ()
-                    {
-                        UpdateChart(dataPoints);
-                    }));
-            }
-            else
-            {
-                UpdateChart(dataPoints);
-            }
-            
-            // save csv and train ai and predict next closing price
-            SharpLearningUtility.PredictNextDataPoint(
-                CsvUtilities.CreateTrainingDataFile(dataPoints, this, 10), (PredictionLabel, TommorowPredictionLabel));
+            StockPoints = GetDataPoints(responseJobj).OrderBy(sp => sp.Date).ToList();
         }
 
-        private void UpdateChart(IOrderedEnumerable<StockPoint> dataPoints)
+        private void UpdateChart(List<StockPoint> dataPoints)
         {
             AddDataPointsToCandlestickSeries(dataPoints);
 
             // moving average
-            MovingAverage(dataPoints.ToList(), 10);
-            MovingAverage(dataPoints.ToList(), 30, "MovingAverage30", 30);
+            MovingAverage(dataPoints, 10);
+            MovingAverage(dataPoints, 30, "MovingAverage30", 30);
         }
 
         private void MovingAverage(List<StockPoint> dataPoints, int numOfPoints, string series = "MovingAverage", int sizeOfAverage = 10)
@@ -93,6 +111,14 @@ namespace StockDisplay
                     average = GetAverage(dataPoints.Skip(i-sizeOfAverage).Take(sizeOfAverage));
                 }
                 chart1.Series[series].Points.AddXY(dataPoints[i].Date, average);
+                if (sizeOfAverage == 10)
+                {
+                    StockPoints[i].MovingAverageTen = average; 
+                }
+                else if(sizeOfAverage == 30)
+                {
+                    StockPoints[i].MovingAverageThirty = average;
+                }
             }
         }
 
@@ -106,7 +132,7 @@ namespace StockDisplay
             return total / dataPoints.Count();
         }
 
-        private void AddDataPointsToCandlestickSeries(IOrderedEnumerable<StockPoint> dataJPoints)
+        private void AddDataPointsToCandlestickSeries(List<StockPoint> dataJPoints)
         {
             // add the stock points to the chart
             chart1.Series[0].Points.Clear();
@@ -161,6 +187,52 @@ namespace StockDisplay
 
             chart1.Series["MovingAverage"].XValueType = ChartValueType.Date;
             chart1.Series["MovingAverage30"].XValueType = ChartValueType.Date;
+        }
+
+        private void SearchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            //FindSymbol(SearchTextBox.Text);
+        }
+
+        private void FindSymbol(string text)
+        {
+            var response = QuerySymbols();
+            var responseJObject = JObject.Parse(response);
+            if (responseJObject["Error Message"] != null) return;
+
+            SearchResults.Items.Clear();
+            foreach (var symbolData in responseJObject["bestMatches"])
+            {
+                var sym = symbolData["1. symbol"].ToString();
+                SearchResults.Items.Add(sym);
+            }
+            if (SearchResults.Items.Count > 0)
+                SearchResults.SelectedItem = SearchResults.Items[0];
+        }
+
+        private string QuerySymbols()
+        {
+            var request = (HttpWebRequest)WebRequest.Create(
+                                        $"https://www.alphavantage.co/query?function=SYMBOL_SEARCH" +
+                                        $"&keywords={SearchTextBox.Text}" +
+                                        $"&apikey=NBFOONK8Z8CG8J29"
+                                        );
+            // process response
+            var response = request.GetResponse();
+            var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+            response.Close();
+            return responseString;
+        }
+
+        private void SearchButton_Click(object sender, EventArgs e)
+        {
+            FindSymbol(SearchTextBox.Text);
+        }
+
+        private void SearchResults_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SymbolToLoad.Text = SearchResults.SelectedItem.ToString();
         }
     }
 

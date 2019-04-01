@@ -10,8 +10,8 @@ namespace StockDisplay
 {
     public static class CsvUtilities
     {
-        public static (string, IOrderedEnumerable<StockPoint>, int) CreateTrainingDataFile(
-            IOrderedEnumerable<StockPoint> dataJPoints, StockView view, int sizeOfPattern)
+        public static (string, List<StockPoint>, int) CreateTrainingDataFile(
+            List<StockPoint> dataJPoints, StockView view, int sizeOfPattern)
         {
             var fileName = "traingdatatemp.csv";
             using (var sw = new StreamWriter(fileName))
@@ -44,9 +44,9 @@ namespace StockDisplay
             var result = "";
             for (int i = 0; i < size; i++)
             {
-                result += $"open{i},high{i},low{i},close{i},volume{i},";
+                result += $"open{i},high{i},low{i},close{i},volume{i},ma10abovema30{i},maa{i},";
             }
-            return result + "lastclose";
+            return result + "lastcloseperc";
         }
 
         public static string GetCsvDataRow(StockPoint[] trainablePoints, int i, int size = 3)
@@ -55,9 +55,11 @@ namespace StockDisplay
             for (int j = 0; j < size; j++)
             {
                 result += $"{trainablePoints[i + j].Open},{trainablePoints[i + j].High},{trainablePoints[i + j].Low}," +
-                    $"{trainablePoints[i + j].Close},{trainablePoints[i + j].Volume},";
+                    $"{trainablePoints[i + j].Close},{trainablePoints[i + j].Volume}," +
+                    $"{trainablePoints[i + j].MovingAverageTen - trainablePoints[i + j].MovingAverageThirty}," +
+                    $"{(trainablePoints[i + j].MovingAverageTen + trainablePoints[i + j].MovingAverageThirty) / 2.0},";
             }
-            result += $"{trainablePoints[i + 3].Close}";
+            result += $"{double.Parse(trainablePoints[i + size].Close) / double.Parse(trainablePoints[i + size - 1].Close)}";
             return result;
         }
     }
