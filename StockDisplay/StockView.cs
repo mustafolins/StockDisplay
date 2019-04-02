@@ -37,28 +37,48 @@ namespace StockDisplay
                 series.Points.Clear();
             }
 
+            GetStockPoints(true);
+            LodingInfoLabel.Text = "Analyzing current market trends.";
+            double spxAverage = await GetAveragePercent();
+            SpxAverage.Text = $"SPX Percent: {Math.Round(spxAverage, 5)}";
+
             GetStockPoints();
 
             // add data points to chart 
             UpdateChart(StockPoints);
+            LodingInfoLabel.Text = $"Analyzing trends for {SymbolToLoad.Text.ToUpper()}.";
+            double average = await GetAveragePercent();
 
-            var firstResult = await Task.Run<double>(() => 
+            AveragePredictionLabel.Text = $"Average Percent: {Math.Round(average, 5)}";
+            if (StockPoints.Count > 0)
+            {
+                ExpectedChangeLabel.Text = $"Expected Close: {Math.Round(average * double.Parse(StockPoints.Last().Close), 3)}";
+                InclusiveAverage.Text = $"Average (Including SPX): {Math.Round((average + spxAverage) / 2.0, 5)}";
+            }
+            LodingInfoLabel.Text = "Done";
+            CurrentProgress.Hide();
+
+            await Task.Delay(3000);
+            LodingInfoLabel.Text = "";
+        }
+
+        private async Task<double> GetAveragePercent()
+        {
+            var firstResult = await Task.Run<double>(() =>
             {
                 return RetrieveStockDataAndTrainAI((PredictionLabel, TommorowPredictionLabel), Convert.ToInt32(Pattern1LengthUpDown.Value));
             });
-            var secondResult = await Task.Run<double>(() => 
+            var secondResult = await Task.Run<double>(() =>
             {
                 return RetrieveStockDataAndTrainAI((PredictionLabel2, TomorrowsPredictionLabel2), Convert.ToInt32(Pattern2LenthUpDown.Value));
             });
-            var thirdResult = await Task.Run<double>(() => 
+            var thirdResult = await Task.Run<double>(() =>
             {
                 return RetrieveStockDataAndTrainAI((PredictionLabel3, TomorrowsPredictionLabel3), Convert.ToInt32(Pattern3LengthUpDown.Value));
             });
 
             var average = (firstResult + secondResult + thirdResult) / 3;
-
-            AveragePredictionLabel.Text = $"Average Percent: {Math.Round(average, 5)}";
-            ExpectedChangeLabel.Text = $"Expected Close: {Math.Round(average * double.Parse(StockPoints.Last().Close), 3)}";
+            return average;
         }
 
         private double RetrieveStockDataAndTrainAI((Label, Label) labels, int size)
@@ -77,15 +97,17 @@ namespace StockDisplay
                 CsvUtilities.CreateTrainingDataFile(StockPoints, this, size), (labels.Item1, labels.Item2));
         }
 
-        private void GetStockPoints()
+        private void GetStockPoints(bool spx = false)
         {
             // make request
-            string responseString = GetStockData();
+            string responseString = GetStockData(spx);
 
             // parse response
             var responseJobj = JObject.Parse(responseString);
             // get the points and sort them.
-            StockPoints = GetDataPoints(responseJobj).OrderBy(sp => sp.Date).ToList();
+            var tempPoints = GetDataPoints(responseJobj);
+            int size = int.Parse(ChartLength.SelectedItem.ToString());
+            StockPoints = tempPoints.OrderBy(sp => sp.Date).Skip(tempPoints.Count() - size).Take(size).ToList();
         }
 
         private void UpdateChart(List<StockPoint> dataPoints)
@@ -147,12 +169,12 @@ namespace StockDisplay
                                                   select double.Parse(point.Low) - 5).FirstOrDefault();
         }
 
-        private string GetStockData()
+        private string GetStockData(bool spx = false)
         {
             var request = (HttpWebRequest)WebRequest.Create(
                             $"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY" +
-                            $"&symbol={SymbolToLoad.Text}" +
-                            $"&outputsize={"compact"}&apikey=NBFOONK8Z8CG8J29"
+                            $"&symbol={((spx)?"SPX":SymbolToLoad.Text)}" +
+                            $"&outputsize={"full"}&apikey=NBFOONK8Z8CG8J29"
                             );
             // process response
             var response = request.GetResponse();
@@ -187,6 +209,8 @@ namespace StockDisplay
 
             chart1.Series["MovingAverage"].XValueType = ChartValueType.Date;
             chart1.Series["MovingAverage30"].XValueType = ChartValueType.Date;
+
+            ChartLength.SelectedItem = ChartLength.Items[1];
         }
 
         private void SearchTextBox_TextChanged(object sender, EventArgs e)

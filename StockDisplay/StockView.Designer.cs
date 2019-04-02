@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.PredictionLabel = new System.Windows.Forms.Label();
             this.TommorowPredictionLabel = new System.Windows.Forms.Label();
@@ -55,6 +55,11 @@
             this.Pattern3Length = new System.Windows.Forms.Label();
             this.AveragePredictionLabel = new System.Windows.Forms.Label();
             this.ExpectedChangeLabel = new System.Windows.Forms.Label();
+            this.SpxAverage = new System.Windows.Forms.Label();
+            this.LodingInfoLabel = new System.Windows.Forms.Label();
+            this.InclusiveAverage = new System.Windows.Forms.Label();
+            this.ChartLength = new System.Windows.Forms.ComboBox();
+            this.ChartLengthLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern1LengthUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern2LenthUpDown)).BeginInit();
@@ -66,27 +71,27 @@
             this.chart1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            chartArea2.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea2);
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
             this.chart1.Location = new System.Drawing.Point(12, 130);
             this.chart1.Name = "chart1";
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
-            series4.Name = "Series1";
-            series4.YValuesPerPoint = 4;
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series5.Color = System.Drawing.Color.Blue;
-            series5.Name = "MovingAverage";
-            series5.ToolTip = "#VAL{C}";
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series6.Color = System.Drawing.Color.Red;
-            series6.Name = "MovingAverage30";
-            series6.ToolTip = "#VAL{C}";
-            this.chart1.Series.Add(series4);
-            this.chart1.Series.Add(series5);
-            this.chart1.Series.Add(series6);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
+            series1.Name = "Series1";
+            series1.YValuesPerPoint = 4;
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.Color = System.Drawing.Color.Blue;
+            series2.Name = "MovingAverage";
+            series2.ToolTip = "#VAL{C}";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Color = System.Drawing.Color.Red;
+            series3.Name = "MovingAverage30";
+            series3.ToolTip = "#VAL{C}";
+            this.chart1.Series.Add(series1);
+            this.chart1.Series.Add(series2);
+            this.chart1.Series.Add(series3);
             this.chart1.Size = new System.Drawing.Size(835, 325);
             this.chart1.TabIndex = 1;
             this.chart1.Text = "chart1";
@@ -315,11 +320,69 @@
             this.ExpectedChangeLabel.TabIndex = 24;
             this.ExpectedChangeLabel.Text = "Expected Close:";
             // 
+            // SpxAverage
+            // 
+            this.SpxAverage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SpxAverage.AutoSize = true;
+            this.SpxAverage.Location = new System.Drawing.Point(573, 47);
+            this.SpxAverage.Name = "SpxAverage";
+            this.SpxAverage.Size = new System.Drawing.Size(71, 13);
+            this.SpxAverage.TabIndex = 25;
+            this.SpxAverage.Text = "SPX Percent:";
+            // 
+            // LodingInfoLabel
+            // 
+            this.LodingInfoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.LodingInfoLabel.AutoSize = true;
+            this.LodingInfoLabel.Location = new System.Drawing.Point(507, 481);
+            this.LodingInfoLabel.Name = "LodingInfoLabel";
+            this.LodingInfoLabel.Size = new System.Drawing.Size(0, 13);
+            this.LodingInfoLabel.TabIndex = 26;
+            // 
+            // InclusiveAverage
+            // 
+            this.InclusiveAverage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.InclusiveAverage.AutoSize = true;
+            this.InclusiveAverage.Location = new System.Drawing.Point(573, 66);
+            this.InclusiveAverage.Name = "InclusiveAverage";
+            this.InclusiveAverage.Size = new System.Drawing.Size(126, 13);
+            this.InclusiveAverage.TabIndex = 27;
+            this.InclusiveAverage.Text = "Average (Including SPX):";
+            // 
+            // ChartLength
+            // 
+            this.ChartLength.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ChartLength.FormattingEnabled = true;
+            this.ChartLength.Items.AddRange(new object[] {
+            "30",
+            "90",
+            "180",
+            "365"});
+            this.ChartLength.Location = new System.Drawing.Point(576, 101);
+            this.ChartLength.Name = "ChartLength";
+            this.ChartLength.Size = new System.Drawing.Size(121, 21);
+            this.ChartLength.TabIndex = 28;
+            // 
+            // ChartLengthLabel
+            // 
+            this.ChartLengthLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ChartLengthLabel.AutoSize = true;
+            this.ChartLengthLabel.Location = new System.Drawing.Point(573, 85);
+            this.ChartLengthLabel.Name = "ChartLengthLabel";
+            this.ChartLengthLabel.Size = new System.Drawing.Size(71, 13);
+            this.ChartLengthLabel.TabIndex = 29;
+            this.ChartLengthLabel.Text = "Chart Length:";
+            // 
             // StockView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(859, 510);
+            this.Controls.Add(this.ChartLengthLabel);
+            this.Controls.Add(this.ChartLength);
+            this.Controls.Add(this.InclusiveAverage);
+            this.Controls.Add(this.LodingInfoLabel);
+            this.Controls.Add(this.SpxAverage);
             this.Controls.Add(this.ExpectedChangeLabel);
             this.Controls.Add(this.AveragePredictionLabel);
             this.Controls.Add(this.Pattern3LengthUpDown);
@@ -379,6 +442,11 @@
         private System.Windows.Forms.Label Pattern3Length;
         private System.Windows.Forms.Label AveragePredictionLabel;
         private System.Windows.Forms.Label ExpectedChangeLabel;
+        private System.Windows.Forms.Label SpxAverage;
+        private System.Windows.Forms.Label LodingInfoLabel;
+        private System.Windows.Forms.Label InclusiveAverage;
+        private System.Windows.Forms.ComboBox ChartLength;
+        private System.Windows.Forms.Label ChartLengthLabel;
     }
 }
 
