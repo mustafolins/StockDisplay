@@ -38,6 +38,7 @@ namespace StockDisplay
             }
 
             GetStockPoints(true);
+            CalculateTechnicalIndicators(StockPoints, true);
             LodingInfoLabel.Text = "Analyzing current market trends.";
             double spxAverage = await GetAveragePercent();
             SpxAverage.Text = $"SPX Percent: {Math.Round(spxAverage, 5)}";
@@ -45,7 +46,7 @@ namespace StockDisplay
             GetStockPoints();
 
             // add data points to chart 
-            UpdateChart(StockPoints);
+            CalculateTechnicalIndicators(StockPoints);
             LodingInfoLabel.Text = $"Analyzing trends for {SymbolToLoad.Text.ToUpper()}.";
             double average = await GetAveragePercent();
 
@@ -110,16 +111,52 @@ namespace StockDisplay
             StockPoints = tempPoints.OrderBy(sp => sp.Date).Skip(tempPoints.Count() - size).Take(size).ToList();
         }
 
-        private void UpdateChart(List<StockPoint> dataPoints)
+        private void CalculateTechnicalIndicators(List<StockPoint> dataPoints, bool isSpx = false)
         {
-            AddDataPointsToCandlestickSeries(dataPoints);
+            if (!isSpx)
+                AddDataPointsToCandlestickSeries(dataPoints);
 
             // moving average
-            MovingAverage(dataPoints, 10);
-            MovingAverage(dataPoints, 30, "MovingAverage30", 30);
+            MovingAverage(dataPoints, "MovingAverage", 10, isSpx);
+            MovingAverage(dataPoints, "MovingAverage30", 30, isSpx);
+            StandardDeviation(dataPoints, 10);
+            StandardDeviation(dataPoints, 30);
         }
 
-        private void MovingAverage(List<StockPoint> dataPoints, int numOfPoints, string series = "MovingAverage", int sizeOfAverage = 10)
+        private void StandardDeviation(List<StockPoint> dataPoints, int sizeOfAverage)
+        {
+            for (int i = 0; i < dataPoints.Count; i++)
+            {
+                double stdDeviation;
+                if (i < sizeOfAverage)
+                {
+                    stdDeviation = GetStdDev(dataPoints.Take(i + 1));
+                }
+                else
+                {
+                    stdDeviation = GetStdDev(dataPoints.Skip(i - sizeOfAverage).Take(sizeOfAverage));
+                }
+
+                if (sizeOfAverage == 10)
+                {
+                    StockPoints[i].StdDev10 = stdDeviation;
+                }
+                else if (sizeOfAverage == 30)
+                {
+                    StockPoints[i].StdDev30 = stdDeviation;
+                }
+            }
+        }
+
+        private double GetStdDev(IEnumerable<StockPoint> dataPoints)
+        {
+            var mean = GetAverage(dataPoints);
+            return Math.Sqrt(
+                dataPoints.Sum(
+                    x => Math.Pow(double.Parse(x.Close) - mean, 2)) / dataPoints.Count());
+        }
+
+        private void MovingAverage(List<StockPoint> dataPoints, string series = "MovingAverage", int sizeOfAverage = 10, bool isSpx = false)
         {
             for (int i = 0; i < dataPoints.Count; i++)
             {
@@ -132,7 +169,8 @@ namespace StockDisplay
                 {
                     average = GetAverage(dataPoints.Skip(i-sizeOfAverage).Take(sizeOfAverage));
                 }
-                chart1.Series[series].Points.AddXY(dataPoints[i].Date, average);
+                if (!isSpx)
+                    chart1.Series[series].Points.AddXY(dataPoints[i].Date, average);
                 if (sizeOfAverage == 10)
                 {
                     StockPoints[i].MovingAverageTen = average; 

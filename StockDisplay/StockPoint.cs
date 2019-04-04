@@ -19,6 +19,8 @@ namespace StockDisplay
         public DateTime Date { get; set; }
         public double MovingAverageTen { get; set; }
         public double MovingAverageThirty { get; set; }
+        public double StdDev10 { get; set; }
+        public double StdDev30 { get; set; }
 
         public IEnumerable<double> GetValues()
         {

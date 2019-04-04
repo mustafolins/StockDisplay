@@ -133,7 +133,7 @@ namespace StockDisplay
 
         public static double[] GetLastPattern(StockPoint[] points, int size)
         {
-            var observation = new double[size * 7];
+            var observation = new double[size * 9];
             for (int i = 0; i < size; i++)
             {
                 observation[i + (i + 0)] = double.Parse(points[points.Length + i - size].Open);
@@ -143,6 +143,8 @@ namespace StockDisplay
                 observation[i + (i + 4)] = double.Parse(points[points.Length + i - size].Volume);
                 observation[i + (i + 5)] = points[points.Length + i - size].MovingAverageTen - points[points.Length + i - size].MovingAverageThirty;
                 observation[i + (i + 6)] = (points[points.Length + i - size].MovingAverageTen + points[points.Length + i - size].MovingAverageThirty)/2;
+                observation[i + (i + 6)] = points[points.Length + i - size].StdDev10;
+                observation[i + (i + 6)] = points[points.Length + i - size].StdDev30;
             }
             return observation;
         }
