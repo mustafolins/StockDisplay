@@ -133,18 +133,31 @@ namespace StockDisplay
 
         public static double[] GetLastPattern(StockPoint[] points, int size)
         {
-            var observation = new double[size * 9];
+            var observation = new double[size * 13];
             for (int i = 0; i < size; i++)
             {
-                observation[i + (i + 0)] = double.Parse(points[points.Length + i - size].Open);
-                observation[i + (i + 1)] = double.Parse(points[points.Length + i - size].High);
-                observation[i + (i + 2)] = double.Parse(points[points.Length + i - size].Low);
-                observation[i + (i + 3)] = double.Parse(points[points.Length + i - size].Close);
-                observation[i + (i + 4)] = double.Parse(points[points.Length + i - size].Volume);
-                observation[i + (i + 5)] = points[points.Length + i - size].MovingAverageTen - points[points.Length + i - size].MovingAverageThirty;
-                observation[i + (i + 6)] = (points[points.Length + i - size].MovingAverageTen + points[points.Length + i - size].MovingAverageThirty)/2;
-                observation[i + (i + 6)] = points[points.Length + i - size].StdDev10;
-                observation[i + (i + 6)] = points[points.Length + i - size].StdDev30;
+                observation[i + (i + 0)] = double.Parse(points[points.Length + i - size].Volume);
+                // open/high high/low close/low
+                observation[i + (i + 1)] = double.Parse(points[points.Length + i - size].Open) / double.Parse(points[points.Length + i - size].High);
+                observation[i + (i + 2)] = double.Parse(points[points.Length + i - size].High) / double.Parse(points[points.Length + i - size].Low);
+                observation[i + (i + 3)] = double.Parse(points[points.Length + i - size].Close) / double.Parse(points[points.Length + i - size].Low);
+                // open/close open/low high/close
+                observation[i + (i + 4)] = double.Parse(points[points.Length + i - size].Open) / double.Parse(points[points.Length + i - size].Close);
+                observation[i + (i + 5)] = double.Parse(points[points.Length + i - size].Open) / double.Parse(points[points.Length + i - size].Low);
+                observation[i + (i + 6)] = double.Parse(points[points.Length + i - size].High) / double.Parse(points[points.Length + i - size].Close);
+                // sma
+                observation[i + (i + 7)] = (points[points.Length + i - size].MovingAverageTen - points[points.Length + i - size].MovingAverageThirty)
+                    / double.Parse(points[points.Length + i - size].Close);
+                observation[i + (i + 8)] = ((points[points.Length + i - size].MovingAverageTen + points[points.Length + i - size].MovingAverageThirty)/2)
+                    / double.Parse(points[points.Length + i - size].Close);
+                // std dev
+                observation[i + (i + 9)] = points[points.Length + i - size].StdDev10 / points[points.Length + i - size].MovingAverageTen;
+                observation[i + (i + 10)] = points[points.Length + i - size].StdDev30 / points[points.Length + i - size].MovingAverageThirty;
+                // bb
+                observation[i + (i + 11)] = (points[points.Length + i - size].BBUpper10 - points[points.Length + i - size].BBLower10)
+                    / points[points.Length + i - size].MovingAverageTen;
+                observation[i + (i + 12)] = (points[points.Length + i - size].BBUpper30 - points[points.Length + i - size].BBLower30)
+                    / points[points.Length + i - size].MovingAverageThirty;
             }
             return observation;
         }

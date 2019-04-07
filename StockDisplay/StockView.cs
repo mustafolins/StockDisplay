@@ -121,6 +121,38 @@ namespace StockDisplay
             MovingAverage(dataPoints, "MovingAverage30", 30, isSpx);
             StandardDeviation(dataPoints, 10);
             StandardDeviation(dataPoints, 30);
+            BollingerBand(dataPoints, 10);
+            BollingerBand(dataPoints, 30);
+        }
+
+        private void BollingerBand(List<StockPoint> dataPoints, int sizeOfAverage)
+        {
+            for (int i = 0; i < dataPoints.Count; i++)
+            {
+                double stdDev;
+                double average;
+                if (i < sizeOfAverage)
+                {
+                    stdDev = GetStdDev(dataPoints.Take(i + 1));
+                    average = GetAverage(dataPoints.Take(i + 1));
+                }
+                else
+                {
+                    stdDev = GetStdDev(dataPoints.Skip(i - sizeOfAverage).Take(sizeOfAverage));
+                    average = GetAverage(dataPoints.Skip(i - sizeOfAverage).Take(sizeOfAverage));
+                }
+
+                if (sizeOfAverage == 10)
+                {
+                    StockPoints[i].BBLower10 = stdDev * 2 - average;
+                    StockPoints[i].BBUpper10 = stdDev * 2 + average;
+                }
+                else if (sizeOfAverage == 30)
+                {
+                    StockPoints[i].BBLower30 = stdDev * 2 - average;
+                    StockPoints[i].BBUpper30 = stdDev * 2 + average;
+                }
+            }
         }
 
         private void StandardDeviation(List<StockPoint> dataPoints, int sizeOfAverage)

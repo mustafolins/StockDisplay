@@ -21,6 +21,10 @@ namespace StockDisplay
         public double MovingAverageThirty { get; set; }
         public double StdDev10 { get; set; }
         public double StdDev30 { get; set; }
+        public double BBUpper10 { get; set; }
+        public double BBLower10 { get; set; }
+        public double BBUpper30 { get; set; }
+        public double BBLower30 { get; set; }
 
         public IEnumerable<double> GetValues()
         {

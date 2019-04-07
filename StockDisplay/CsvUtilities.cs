@@ -44,7 +44,10 @@ namespace StockDisplay
             var result = "";
             for (int i = 0; i < size; i++)
             {
-                result += $"open{i},high{i},low{i},close{i},volume{i},ma10abovema30{i},maa{i},stddev10{i},stddev30{i},";
+                result += $"volume{i}," +
+                    $"openhigh{i},highlow{i},closelow{i},openclose{i},openlow{i},highclose{i}," +
+                    $"ma10abovema30{i},maa{i},stddev10{i},stddev30{i}," +
+                    $"bb10{i},bb30{i},";
             }
             return result + "lastcloseperc";
         }
@@ -54,11 +57,24 @@ namespace StockDisplay
             var result = "";
             for (int j = 0; j < size; j++)
             {
-                result += $"{trainablePoints[i + j].Open},{trainablePoints[i + j].High},{trainablePoints[i + j].Low}," +
-                    $"{trainablePoints[i + j].Close},{trainablePoints[i + j].Volume}," +
-                    $"{trainablePoints[i + j].MovingAverageTen - trainablePoints[i + j].MovingAverageThirty}," +
-                    $"{(trainablePoints[i + j].MovingAverageTen + trainablePoints[i + j].MovingAverageThirty) / 2.0}," +
-                    $"{trainablePoints[i + j].StdDev10},{trainablePoints[i + j].StdDev30},";
+                // open high low close volume
+                result += $"{trainablePoints[i + j].Volume}," +
+                    // open/high high/low close/low open/close open/low high/close
+                    $"{double.Parse(trainablePoints[i + j].Open) / double.Parse(trainablePoints[i + j].High)}," +
+                    $"{double.Parse(trainablePoints[i + j].High) / double.Parse(trainablePoints[i + j].Low)}," +
+                    $"{double.Parse(trainablePoints[i + j].Close) / double.Parse(trainablePoints[i + j].Low)}," +
+                    $"{double.Parse(trainablePoints[i + j].Open) / double.Parse(trainablePoints[i + j].Close)}," +
+                    $"{double.Parse(trainablePoints[i + j].Open) / double.Parse(trainablePoints[i + j].Low)}," +
+                    $"{double.Parse(trainablePoints[i + j].High) / double.Parse(trainablePoints[i + j].Close)}," +
+                    // sma
+                    $"{(trainablePoints[i + j].MovingAverageTen - trainablePoints[i + j].MovingAverageThirty) / double.Parse(trainablePoints[i + j].Close)}," +
+                    $"{((trainablePoints[i + j].MovingAverageTen + trainablePoints[i + j].MovingAverageThirty) / 2.0) / double.Parse(trainablePoints[i + j].Close)}," +
+                    // std deviation
+                    $"{trainablePoints[i + j].StdDev10 / trainablePoints[i + j].MovingAverageTen}," +
+                    $"{trainablePoints[i + j].StdDev30 / trainablePoints[i + j].MovingAverageThirty}," +
+                    // bollinger band
+                    $"{(trainablePoints[i + j].BBUpper10 - trainablePoints[i + j].BBLower10) / trainablePoints[i + j].MovingAverageTen}," +
+                    $"{(trainablePoints[i + j].BBUpper30 - trainablePoints[i + j].BBLower30) / trainablePoints[i + j].MovingAverageThirty},";
             }
             result += $"{double.Parse(trainablePoints[i + size].Close) / double.Parse(trainablePoints[i + size - 1].Close)}";
             return result;
