@@ -73,6 +73,7 @@ namespace StockDisplay
                     $"{trainablePoints[i + j].StdDev10 / trainablePoints[i + j].MovingAverageTen}," +
                     $"{trainablePoints[i + j].StdDev30 / trainablePoints[i + j].MovingAverageThirty}," +
                     // bollinger band
+                    // todo: this always results in 2 need to find a better way dealing with this
                     $"{(trainablePoints[i + j].BBUpper10 - trainablePoints[i + j].BBLower10) / trainablePoints[i + j].MovingAverageTen}," +
                     $"{(trainablePoints[i + j].BBUpper30 - trainablePoints[i + j].BBLower30) / trainablePoints[i + j].MovingAverageThirty},";
             }

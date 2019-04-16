@@ -60,6 +60,8 @@
             this.InclusiveAverage = new System.Windows.Forms.Label();
             this.ChartLength = new System.Windows.Forms.ComboBox();
             this.ChartLengthLabel = new System.Windows.Forms.Label();
+            this.AccuracyLabel = new System.Windows.Forms.Label();
+            this.GetAccuracyCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern1LengthUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern2LenthUpDown)).BeginInit();
@@ -73,7 +75,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
-            this.chart1.Location = new System.Drawing.Point(12, 130);
+            this.chart1.Location = new System.Drawing.Point(12, 150);
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
@@ -92,7 +94,7 @@
             this.chart1.Series.Add(series1);
             this.chart1.Series.Add(series2);
             this.chart1.Series.Add(series3);
-            this.chart1.Size = new System.Drawing.Size(835, 325);
+            this.chart1.Size = new System.Drawing.Size(835, 305);
             this.chart1.TabIndex = 1;
             this.chart1.Text = "chart1";
             // 
@@ -373,11 +375,32 @@
             this.ChartLengthLabel.TabIndex = 29;
             this.ChartLengthLabel.Text = "Chart Length:";
             // 
+            // AccuracyLabel
+            // 
+            this.AccuracyLabel.AutoSize = true;
+            this.AccuracyLabel.Location = new System.Drawing.Point(118, 128);
+            this.AccuracyLabel.Name = "AccuracyLabel";
+            this.AccuracyLabel.Size = new System.Drawing.Size(55, 13);
+            this.AccuracyLabel.TabIndex = 30;
+            this.AccuracyLabel.Text = "Accuracy:";
+            // 
+            // GetAccuracyCheckBox
+            // 
+            this.GetAccuracyCheckBox.AutoSize = true;
+            this.GetAccuracyCheckBox.Location = new System.Drawing.Point(15, 127);
+            this.GetAccuracyCheckBox.Name = "GetAccuracyCheckBox";
+            this.GetAccuracyCheckBox.Size = new System.Drawing.Size(91, 17);
+            this.GetAccuracyCheckBox.TabIndex = 31;
+            this.GetAccuracyCheckBox.Text = "Get Accuracy";
+            this.GetAccuracyCheckBox.UseVisualStyleBackColor = true;
+            // 
             // StockView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(859, 510);
+            this.Controls.Add(this.GetAccuracyCheckBox);
+            this.Controls.Add(this.AccuracyLabel);
             this.Controls.Add(this.ChartLengthLabel);
             this.Controls.Add(this.ChartLength);
             this.Controls.Add(this.InclusiveAverage);
@@ -447,6 +470,8 @@
         private System.Windows.Forms.Label InclusiveAverage;
         private System.Windows.Forms.ComboBox ChartLength;
         private System.Windows.Forms.Label ChartLengthLabel;
+        private System.Windows.Forms.Label AccuracyLabel;
+        private System.Windows.Forms.CheckBox GetAccuracyCheckBox;
     }
 }
 

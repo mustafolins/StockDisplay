@@ -22,12 +22,12 @@ namespace StockDisplay
 {
     public partial class StockView : Form
     {
-        public static List<StockPoint> StockPoints { get; set; }
-
         public StockView()
         {
             InitializeComponent();
         }
+
+        public bool GetAccuracy { get { return GetAccuracyCheckBox.Checked; } set { }}
 
         private async void Go_ClickAsync(object sender, EventArgs e)
         {
@@ -37,23 +37,60 @@ namespace StockDisplay
                 series.Points.Clear();
             }
 
-            GetStockPoints(true);
-            CalculateTechnicalIndicators(StockPoints, true);
+            int size = int.Parse(ChartLength.SelectedItem.ToString());
+
+            var spxPoints = GetStockPoints(true, size);
+            CalculateTechnicalIndicators(spxPoints, true);
             LodingInfoLabel.Text = "Analyzing current market trends.";
-            double spxAverage = await GetAveragePercent();
+            double spxAverage = await GetAveragePercent(spxPoints);
             SpxAverage.Text = $"SPX Percent: {Math.Round(spxAverage, 5)}";
 
-            GetStockPoints();
+            List<StockPoint> testSymbolPoints;
+            var symbolPoints = GetStockPoints(false, 0, size);
+
+            if (GetAccuracy)
+            {
+                var accuaracyTestSize = int.Parse(ChartLength.SelectedItem.ToString()) / 4;
+                double first = 0.0, second = 0.0, last = 0.0;
+                var missedCount = 0;
+                for (int i = 1; i < accuaracyTestSize; i++)
+                {
+                    testSymbolPoints = GetStockPoints(false, i, size);
+                    if (testSymbolPoints.Count != size)
+                    {
+                        missedCount++;
+                        continue;
+                    }
+
+                    CalculateTechnicalIndicators(testSymbolPoints, true);
+
+                    var (firstPred, secondPred, lastPred) = await GetPredictions(testSymbolPoints);
+                    var nextPoint = symbolPoints.FirstOrDefault(sp => sp.Date == testSymbolPoints.Last().Date.AddDays(1));
+                    if (nextPoint == null) // is friday so add 3 days
+                    {
+                        nextPoint = symbolPoints.FirstOrDefault(sp => sp.Date == testSymbolPoints.Last().Date.AddDays(3));
+                    }
+                    first += (double.Parse(testSymbolPoints.Last().Close) * firstPred) / (double.Parse(nextPoint.Close));
+                    second += (double.Parse(testSymbolPoints.Last().Close) * secondPred) / (double.Parse(nextPoint.Close));
+                    last += (double.Parse(testSymbolPoints.Last().Close) * lastPred) / (double.Parse(nextPoint.Close));
+                }
+                accuaracyTestSize -= missedCount - 1;
+                double fAverage = first / accuaracyTestSize;
+                double sAverage = second / accuaracyTestSize;
+                double lAverage = last / accuaracyTestSize;
+
+                AccuracyLabel.Text = $"Accuracy: P1 - {Math.Round(fAverage, 5)} P2 - {Math.Round(sAverage, 5)} P3 - {Math.Round(lAverage, 5)}";
+            }
 
             // add data points to chart 
-            CalculateTechnicalIndicators(StockPoints);
+            CalculateTechnicalIndicators(symbolPoints);
             LodingInfoLabel.Text = $"Analyzing trends for {SymbolToLoad.Text.ToUpper()}.";
-            double average = await GetAveragePercent();
+            double average = await GetAveragePercent(symbolPoints);
 
             AveragePredictionLabel.Text = $"Average Percent: {Math.Round(average, 5)}";
-            if (StockPoints.Count > 0)
+            if (symbolPoints.Count > 0)
             {
-                ExpectedChangeLabel.Text = $"Expected Close: {Math.Round(average * double.Parse(StockPoints.Last().Close), 3)}";
+                ExpectedChangeLabel.Text = $"Expected Close: {Math.Round(average * double.Parse(symbolPoints.Last().Close), 3)}";
                 InclusiveAverage.Text = $"Average (Including SPX): {Math.Round((average + spxAverage) / 2.0, 5)}";
             }
             LodingInfoLabel.Text = "Done";
@@ -63,30 +100,36 @@ namespace StockDisplay
             LodingInfoLabel.Text = "";
         }
 
-        private async Task<double> GetAveragePercent()
+        private async Task<double> GetAveragePercent(List<StockPoint> stockPoints)
         {
-            var firstResult = await Task.Run<double>(() =>
-            {
-                return RetrieveStockDataAndTrainAI((PredictionLabel, TommorowPredictionLabel), Convert.ToInt32(Pattern1LengthUpDown.Value));
-            });
-            var secondResult = await Task.Run<double>(() =>
-            {
-                return RetrieveStockDataAndTrainAI((PredictionLabel2, TomorrowsPredictionLabel2), Convert.ToInt32(Pattern2LenthUpDown.Value));
-            });
-            var thirdResult = await Task.Run<double>(() =>
-            {
-                return RetrieveStockDataAndTrainAI((PredictionLabel3, TomorrowsPredictionLabel3), Convert.ToInt32(Pattern3LengthUpDown.Value));
-            });
+            var (first, second, third) = await GetPredictions(stockPoints);
 
-            var average = (firstResult + secondResult + thirdResult) / 3;
+            var average = (first + second + third) / 3;
             return average;
         }
 
-        private double RetrieveStockDataAndTrainAI((Label, Label) labels, int size)
+        private async Task<(double, double, double)> GetPredictions(List<StockPoint> stockPoints)
+        {
+            var firstResult = await Task.Run<double>(() =>
+            {
+                return RetrieveStockDataAndTrainAI(stockPoints, (PredictionLabel, TommorowPredictionLabel), Convert.ToInt32(Pattern1LengthUpDown.Value));
+            });
+            var secondResult = await Task.Run<double>(() =>
+            {
+                return RetrieveStockDataAndTrainAI(stockPoints, (PredictionLabel2, TomorrowsPredictionLabel2), Convert.ToInt32(Pattern2LenthUpDown.Value));
+            });
+            var thirdResult = await Task.Run<double>(() =>
+            {
+                return RetrieveStockDataAndTrainAI(stockPoints, (PredictionLabel3, TomorrowsPredictionLabel3), Convert.ToInt32(Pattern3LengthUpDown.Value));
+            });
+            return (firstResult, secondResult, thirdResult);
+        }
+
+        private double RetrieveStockDataAndTrainAI(List<StockPoint> stockPoints, (Label, Label) labels, int size)
         {
             // todo: add some more support for the alphavantage api
 
-            if (StockPoints.Count() == 0)
+            if (stockPoints.Count() == 0)
             {
                 MessageBox.Show($"Stock data not found for {SymbolToLoad.Text}",
                     "No Stock Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -95,10 +138,10 @@ namespace StockDisplay
 
             // save csv and train ai and predict next closing price
             return SharpLearningUtility.PredictNextDataPoint(
-                CsvUtilities.CreateTrainingDataFile(StockPoints, this, size), (labels.Item1, labels.Item2));
+                CsvUtilities.CreateTrainingDataFile(stockPoints, this, size), (labels.Item1, labels.Item2));
         }
 
-        private void GetStockPoints(bool spx = false)
+        private List<StockPoint> GetStockPoints(bool spx = false, int offset = 0, int size = 90)
         {
             // make request
             string responseString = GetStockData(spx);
@@ -107,8 +150,8 @@ namespace StockDisplay
             var responseJobj = JObject.Parse(responseString);
             // get the points and sort them.
             var tempPoints = GetDataPoints(responseJobj);
-            int size = int.Parse(ChartLength.SelectedItem.ToString());
-            StockPoints = tempPoints.OrderBy(sp => sp.Date).Skip(tempPoints.Count() - size).Take(size).ToList();
+            var temp = tempPoints.OrderBy(sp => sp.Date).Skip(tempPoints.Count() - (size + offset)).Take(size).ToList();
+            return temp;
         }
 
         private void CalculateTechnicalIndicators(List<StockPoint> dataPoints, bool isSpx = false)
@@ -144,13 +187,13 @@ namespace StockDisplay
 
                 if (sizeOfAverage == 10)
                 {
-                    StockPoints[i].BBLower10 = stdDev * 2 - average;
-                    StockPoints[i].BBUpper10 = stdDev * 2 + average;
+                    dataPoints[i].BBLower10 = stdDev * 2 - average;
+                    dataPoints[i].BBUpper10 = stdDev * 2 + average;
                 }
                 else if (sizeOfAverage == 30)
                 {
-                    StockPoints[i].BBLower30 = stdDev * 2 - average;
-                    StockPoints[i].BBUpper30 = stdDev * 2 + average;
+                    dataPoints[i].BBLower30 = stdDev * 2 - average;
+                    dataPoints[i].BBUpper30 = stdDev * 2 + average;
                 }
             }
         }
@@ -171,11 +214,11 @@ namespace StockDisplay
 
                 if (sizeOfAverage == 10)
                 {
-                    StockPoints[i].StdDev10 = stdDeviation;
+                    dataPoints[i].StdDev10 = stdDeviation;
                 }
                 else if (sizeOfAverage == 30)
                 {
-                    StockPoints[i].StdDev30 = stdDeviation;
+                    dataPoints[i].StdDev30 = stdDeviation;
                 }
             }
         }
@@ -205,11 +248,11 @@ namespace StockDisplay
                     chart1.Series[series].Points.AddXY(dataPoints[i].Date, average);
                 if (sizeOfAverage == 10)
                 {
-                    StockPoints[i].MovingAverageTen = average; 
+                    dataPoints[i].MovingAverageTen = average; 
                 }
                 else if(sizeOfAverage == 30)
                 {
-                    StockPoints[i].MovingAverageThirty = average;
+                    dataPoints[i].MovingAverageThirty = average;
                 }
             }
         }
