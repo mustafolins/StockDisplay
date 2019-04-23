@@ -62,6 +62,7 @@
             this.ChartLengthLabel = new System.Windows.Forms.Label();
             this.AccuracyLabel = new System.Windows.Forms.Label();
             this.GetAccuracyCheckBox = new System.Windows.Forms.CheckBox();
+            this.AccuracyTestSize = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern1LengthUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern2LenthUpDown)).BeginInit();
@@ -378,7 +379,7 @@
             // AccuracyLabel
             // 
             this.AccuracyLabel.AutoSize = true;
-            this.AccuracyLabel.Location = new System.Drawing.Point(118, 128);
+            this.AccuracyLabel.Location = new System.Drawing.Point(259, 128);
             this.AccuracyLabel.Name = "AccuracyLabel";
             this.AccuracyLabel.Size = new System.Drawing.Size(55, 13);
             this.AccuracyLabel.TabIndex = 30;
@@ -387,18 +388,33 @@
             // GetAccuracyCheckBox
             // 
             this.GetAccuracyCheckBox.AutoSize = true;
-            this.GetAccuracyCheckBox.Location = new System.Drawing.Point(15, 127);
+            this.GetAccuracyCheckBox.Location = new System.Drawing.Point(156, 127);
             this.GetAccuracyCheckBox.Name = "GetAccuracyCheckBox";
             this.GetAccuracyCheckBox.Size = new System.Drawing.Size(91, 17);
             this.GetAccuracyCheckBox.TabIndex = 31;
             this.GetAccuracyCheckBox.Text = "Get Accuracy";
             this.GetAccuracyCheckBox.UseVisualStyleBackColor = true;
+            this.GetAccuracyCheckBox.CheckedChanged += new System.EventHandler(this.GetAccuracyCheckBox_CheckedChanged);
+            // 
+            // AccuracyTestSize
+            // 
+            this.AccuracyTestSize.FormattingEnabled = true;
+            this.AccuracyTestSize.Items.AddRange(new object[] {
+            "4",
+            "8",
+            "16"});
+            this.AccuracyTestSize.Location = new System.Drawing.Point(15, 123);
+            this.AccuracyTestSize.Name = "AccuracyTestSize";
+            this.AccuracyTestSize.Size = new System.Drawing.Size(135, 21);
+            this.AccuracyTestSize.TabIndex = 32;
+            this.AccuracyTestSize.Text = "Accuracy Test Size(%)";
             // 
             // StockView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(859, 510);
+            this.Controls.Add(this.AccuracyTestSize);
             this.Controls.Add(this.GetAccuracyCheckBox);
             this.Controls.Add(this.AccuracyLabel);
             this.Controls.Add(this.ChartLengthLabel);
@@ -472,6 +488,7 @@
         private System.Windows.Forms.Label ChartLengthLabel;
         private System.Windows.Forms.Label AccuracyLabel;
         private System.Windows.Forms.CheckBox GetAccuracyCheckBox;
+        private System.Windows.Forms.ComboBox AccuracyTestSize;
     }
 }
 

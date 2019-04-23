@@ -17,6 +17,8 @@ namespace StockDisplay
     public static class SharpLearningUtility
     {
         public static double Prediction { get; set; }
+        public static double TrainError { get; set; }
+        public static double TestError { get; set; }
 
         public static double PredictNextDataPoint((string, List<StockPoint>, int) trainingData, (Label, Label) labels)
         {
@@ -84,16 +86,17 @@ namespace StockDisplay
             var metric = new MeanSquaredErrorRegressionMetric();
 
             // measure the error on training and test set.
-            var trainError = metric.Error(trainSet.Targets, trainPredictions);
-            var testError = metric.Error(testSet.Targets, testPredictions);
+            TrainError = metric.Error(trainSet.Targets, trainPredictions);
+            TestError = metric.Error(testSet.Targets, testPredictions);
             return model;
         }
 
-        private static void ParseCsvDataFile((string, List<StockPoint>, int) trainingData, out CsvParser parser, string targetName, out double[] targets, out SharpLearning.Containers.Matrices.F64Matrix observations)
+        private static void ParseCsvDataFile((string FileName, List<StockPoint> DataPoints, int) trainingData, 
+            out CsvParser parser, string targetName, out double[] targets, out F64Matrix observations)
         {
             // Setup the CsvParser
             parser = new CsvParser(
-                () => new StreamReader(trainingData.Item1), separator: ',');
+                () => new StreamReader(trainingData.FileName), separator: ',');
 
             // read the "close" column, this is the targets for our learner. 
             targets = parser.EnumerateRows(targetName)
@@ -105,27 +108,27 @@ namespace StockDisplay
                 .ToF64Matrix();
         }
 
-        private static void GetTodayAndTomorrowsPrediction((string, List<StockPoint>, int) trainingData, 
-            (Label, Label) labels, RegressionForestModel model)
+        private static void GetTodayAndTomorrowsPrediction((string, List<StockPoint> DataPoints, int PatternLength) trainingData, 
+            (Label Today, Label Tomorrow) labels, RegressionForestModel model)
         {
             // information about the accuracy of the prediction for what happened today
-            var traingPointsArray = trainingData.Item2.Take(trainingData.Item2.Count() - 1).ToArray();
+            var traingPointsArray = trainingData.DataPoints.Take(trainingData.DataPoints.Count() - 1).ToArray();
             var percent = model.Predict(
-                GetLastPattern(traingPointsArray, trainingData.Item3));
+                GetLastPattern(traingPointsArray, trainingData.PatternLength));
             var prediction = percent * double.Parse(traingPointsArray[traingPointsArray.Length - 1].Close);
-            var actualPoint = trainingData.Item2.Last();
-            labels.Item1.Text = $"Today's Prediction: {prediction} Percent: {Math.Round(percent, 5)}" +
+            var actualPoint = trainingData.DataPoints.Last();
+            labels.Today.Text = $"Today's Prediction: {prediction} Percent: {Math.Round(percent, 5)}" +
                 $" Expected Change: {Math.Round(prediction - double.Parse(traingPointsArray[traingPointsArray.Length - 1].Close), 3)}" +
                 $" Off by: {Math.Round(double.Parse(actualPoint.Close) - prediction, 3)}" +
                 $" Actual: {actualPoint.Close}";
 
             // tommorows prediction
-            var traingPointsArray2 = trainingData.Item2.ToArray();
+            var traingPointsArray2 = trainingData.DataPoints.ToArray();
             var percent2 = model.Predict(
-                GetLastPattern(traingPointsArray2, trainingData.Item3));
+                GetLastPattern(traingPointsArray2, trainingData.PatternLength));
             var prediction2 = percent2 * double.Parse(traingPointsArray2[traingPointsArray2.Length - 1].Close);
 
-            labels.Item2.Text = $"Tomorrow's Prediction: {prediction2} Percent: {Math.Round(percent2, 5)}" +
+            labels.Tomorrow.Text = $"Tomorrow's Prediction: {prediction2} Percent: {Math.Round(percent2, 5)}" +
                 $" Expected Change: {Math.Round(prediction2 - double.Parse(traingPointsArray2[traingPointsArray2.Length - 1].Close), 3)}";
 
             Prediction = percent2;

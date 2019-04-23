@@ -26,15 +26,6 @@ namespace StockDisplay
         public double BBUpper30 { get; set; }
         public double BBLower30 { get; set; }
 
-        public IEnumerable<double> GetValues()
-        {
-            yield return double.Parse(Open);
-            yield return double.Parse(High);
-            yield return double.Parse(Low);
-            yield return double.Parse(Close);
-            //yield return double.Parse(Volume);
-        }
-
         public StockPoint SetDate(DateTime dateTime)
         {
             Date = dateTime;

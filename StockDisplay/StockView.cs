@@ -27,7 +27,7 @@ namespace StockDisplay
             InitializeComponent();
         }
 
-        public bool GetAccuracy { get { return GetAccuracyCheckBox.Checked; } set { }}
+        public bool GetAccuracy { get { return GetAccuracyCheckBox.Checked; } set { } }
 
         private async void Go_ClickAsync(object sender, EventArgs e)
         {
@@ -45,36 +45,34 @@ namespace StockDisplay
             double spxAverage = await GetAveragePercent(spxPoints);
             SpxAverage.Text = $"SPX Percent: {Math.Round(spxAverage, 5)}";
 
-            List<StockPoint> testSymbolPoints;
+            List<StockPoint> testSymbolPoints = new List<StockPoint>();
             var symbolPoints = GetStockPoints(false, 0, size);
 
             if (GetAccuracy)
             {
-                var accuaracyTestSize = int.Parse(ChartLength.SelectedItem.ToString()) / 4;
+                var accuaracyTestSize = int.Parse(ChartLength.SelectedItem.ToString()) / int.Parse(AccuracyTestSize.SelectedItem.ToString());
                 double first = 0.0, second = 0.0, last = 0.0;
-                var missedCount = 0;
+
                 for (int i = 1; i < accuaracyTestSize; i++)
                 {
-                    testSymbolPoints = GetStockPoints(false, i, size);
-                    if (testSymbolPoints.Count != size)
+                    do
                     {
-                        missedCount++;
-                        continue;
-                    }
+                        testSymbolPoints = GetStockPoints(false, i, size);
+                    } while (testSymbolPoints.Count != size);
 
                     CalculateTechnicalIndicators(testSymbolPoints, true);
 
                     var (firstPred, secondPred, lastPred) = await GetPredictions(testSymbolPoints);
                     var nextPoint = symbolPoints.FirstOrDefault(sp => sp.Date == testSymbolPoints.Last().Date.AddDays(1));
-                    if (nextPoint == null) // is friday so add 3 days
+                    if (nextPoint == null) // is friday/holiday? so get next available day
                     {
-                        nextPoint = symbolPoints.FirstOrDefault(sp => sp.Date == testSymbolPoints.Last().Date.AddDays(3));
+                        nextPoint = symbolPoints.FirstOrDefault(sp => sp.Date >= testSymbolPoints.Last().Date.AddDays(1));
                     }
                     first += (double.Parse(testSymbolPoints.Last().Close) * firstPred) / (double.Parse(nextPoint.Close));
                     second += (double.Parse(testSymbolPoints.Last().Close) * secondPred) / (double.Parse(nextPoint.Close));
                     last += (double.Parse(testSymbolPoints.Last().Close) * lastPred) / (double.Parse(nextPoint.Close));
                 }
-                accuaracyTestSize -= missedCount - 1;
+
                 double fAverage = first / accuaracyTestSize;
                 double sAverage = second / accuaracyTestSize;
                 double lAverage = last / accuaracyTestSize;
@@ -238,19 +236,19 @@ namespace StockDisplay
                 double average;
                 if (i < sizeOfAverage)
                 {
-                    average = GetAverage(dataPoints.Take(i+1));
+                    average = GetAverage(dataPoints.Take(i + 1));
                 }
                 else
                 {
-                    average = GetAverage(dataPoints.Skip(i-sizeOfAverage).Take(sizeOfAverage));
+                    average = GetAverage(dataPoints.Skip(i - sizeOfAverage).Take(sizeOfAverage));
                 }
                 if (!isSpx)
                     chart1.Series[series].Points.AddXY(dataPoints[i].Date, average);
                 if (sizeOfAverage == 10)
                 {
-                    dataPoints[i].MovingAverageTen = average; 
+                    dataPoints[i].MovingAverageTen = average;
                 }
-                else if(sizeOfAverage == 30)
+                else if (sizeOfAverage == 30)
                 {
                     dataPoints[i].MovingAverageThirty = average;
                 }
@@ -286,7 +284,7 @@ namespace StockDisplay
         {
             var request = (HttpWebRequest)WebRequest.Create(
                             $"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY" +
-                            $"&symbol={((spx)?"SPX":SymbolToLoad.Text)}" +
+                            $"&symbol={((spx) ? "SPX" : SymbolToLoad.Text)}" +
                             $"&outputsize={"full"}&apikey=NBFOONK8Z8CG8J29"
                             );
             // process response
@@ -370,6 +368,11 @@ namespace StockDisplay
         private void SearchResults_SelectedIndexChanged(object sender, EventArgs e)
         {
             SymbolToLoad.Text = SearchResults.SelectedItem.ToString();
+        }
+
+        private void GetAccuracyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            AccuracyTestSize.SelectedIndex = 0;
         }
     }
 
