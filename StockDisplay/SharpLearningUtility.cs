@@ -14,13 +14,13 @@ using System.Windows.Forms;
 
 namespace StockDisplay
 {
-    public static class SharpLearningUtility
+    public class SharpLearningUtility
     {
-        public static double Prediction { get; set; }
-        public static double TrainError { get; set; }
-        public static double TestError { get; set; }
+        public double Prediction { get; set; }
+        public double TrainError { get; set; }
+        public double TestError { get; set; }
 
-        public static double PredictNextDataPoint((string, List<StockPoint>, int) trainingData, (Label, Label) labels)
+        public double PredictNextDataPoint((string, List<StockPoint>, int) trainingData, (Label, Label) labels)
         {
             // the column name in the temp data set we want to model.
             string targetName = "lastcloseperc";
@@ -57,13 +57,13 @@ namespace StockDisplay
             return Prediction;
         }
 
-        private static void SaveTheModel(RegressionForestModel model)
+        private void SaveTheModel(RegressionForestModel model)
         {
             // default format is xml.
             model.Save(() => new StreamWriter(@"randomforest.xml"));
         }
 
-        private static RegressionForestModel TrainTheModel(double[] targets, F64Matrix observations)
+        private RegressionForestModel TrainTheModel(double[] targets, F64Matrix observations)
         {
             // 30 % of the data is used for the test set. 
             var splitter = new RandomTrainingTestIndexSplitter<double>(trainingPercentage: 0.7, seed: 24);
@@ -91,7 +91,7 @@ namespace StockDisplay
             return model;
         }
 
-        private static void ParseCsvDataFile((string FileName, List<StockPoint> DataPoints, int) trainingData, 
+        private void ParseCsvDataFile((string FileName, List<StockPoint> DataPoints, int) trainingData, 
             out CsvParser parser, string targetName, out double[] targets, out F64Matrix observations)
         {
             // Setup the CsvParser
@@ -108,7 +108,7 @@ namespace StockDisplay
                 .ToF64Matrix();
         }
 
-        private static void GetTodayAndTomorrowsPrediction((string, List<StockPoint> DataPoints, int PatternLength) trainingData, 
+        private void GetTodayAndTomorrowsPrediction((string, List<StockPoint> DataPoints, int PatternLength) trainingData, 
             (Label Today, Label Tomorrow) labels, RegressionForestModel model)
         {
             // information about the accuracy of the prediction for what happened today
@@ -134,7 +134,7 @@ namespace StockDisplay
             Prediction = percent2;
         }
 
-        public static double[] GetLastPattern(StockPoint[] points, int size)
+        public double[] GetLastPattern(StockPoint[] points, int size)
         {
             var observation = new double[size * 13];
             for (int i = 0; i < size; i++)
