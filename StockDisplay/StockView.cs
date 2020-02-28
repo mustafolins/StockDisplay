@@ -91,14 +91,16 @@ namespace StockDisplay
 
             for (int i = 1; i < accuaracyTestSize; i++)
             {
-                // get sub set of stock data points from full data set symbol points
-                testSymbolPoints = Fetch.GetSubStockPoints(i, size, symbolPoints);
+                // get sub set of stock data points from full data set symbol points (excluding day being predicted)
+                testSymbolPoints = Fetch.GetSubStockPoints(i, size - i, symbolPoints);
 
                 // calculate the technical indicators
                 CalculateTechnicalIndicators(testSymbolPoints, true);
 
                 // get the predictions for the test data points
                 var (firstPred, secondPred, lastPred) = await GetPredictions(testSymbolPoints);
+
+                // get the actual data point for the day being predicted
                 var nextPoint = symbolPoints.FirstOrDefault(sp => sp.Date == testSymbolPoints.Last().Date.AddDays(1));
                 if (nextPoint == null) // is friday/holiday? so get next available day
                 {
@@ -106,15 +108,15 @@ namespace StockDisplay
                 }
 
                 // add test accuracy to the current total
-                first += (double.Parse(testSymbolPoints.Last().Close) * firstPred) / (double.Parse(nextPoint.Close));
-                second += (double.Parse(testSymbolPoints.Last().Close) * secondPred) / (double.Parse(nextPoint.Close));
-                last += (double.Parse(testSymbolPoints.Last().Close) * lastPred) / (double.Parse(nextPoint.Close));
+                first += Math.Abs(firstPred - (double.Parse(testSymbolPoints.Last().Close) / double.Parse(nextPoint.Close)));
+                second += Math.Abs(secondPred - (double.Parse(testSymbolPoints.Last().Close) / double.Parse(nextPoint.Close)));
+                last += Math.Abs(lastPred - (double.Parse(testSymbolPoints.Last().Close) / double.Parse(nextPoint.Close)));
             }
 
             // calculate the averages for the test predictions
-            double fAverage = first / accuaracyTestSize;
-            double sAverage = second / accuaracyTestSize;
-            double lAverage = last / accuaracyTestSize;
+            double fAverage = 1.0 - (first / accuaracyTestSize);
+            double sAverage = 1.0 - (second / accuaracyTestSize);
+            double lAverage = 1.0 - (last / accuaracyTestSize);
 
             // display results in accuracy label
             AccuracyLabel.Text = $"Accuracy: P1 - {Math.Round(fAverage, 5)} P2 - {Math.Round(sAverage, 5)} P3 - {Math.Round(lAverage, 5)}";
