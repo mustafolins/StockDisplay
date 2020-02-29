@@ -52,7 +52,7 @@ namespace StockDisplay
             return total / dataPoints.Count();
         }
 
-        public void BollingerBand(List<StockPoint> dataPoints, int sizeOfAverage)
+        public void BollingerBand(List<StockPoint> dataPoints, int sizeOfAverage, bool isSpx = false)
         {
             for (int i = 0; i < dataPoints.Count; i++)
             {
@@ -71,13 +71,19 @@ namespace StockDisplay
 
                 if (sizeOfAverage == 10)
                 {
-                    dataPoints[i].BBLower10 = stdDev * 2 - average;
-                    dataPoints[i].BBUpper10 = stdDev * 2 + average;
+                    dataPoints[i].BBLower10 = average - stdDev * 2;
+                    dataPoints[i].BBUpper10 = average + stdDev * 2;
                 }
                 else if (sizeOfAverage == 30)
                 {
-                    dataPoints[i].BBLower30 = stdDev * 2 - average;
-                    dataPoints[i].BBUpper30 = stdDev * 2 + average;
+                    dataPoints[i].BBLower30 = average - stdDev * 2;
+                    dataPoints[i].BBUpper30 = average + stdDev * 2;
+                }
+
+                if (!isSpx)
+                {
+                    Chart.Series["BBUpper" + sizeOfAverage].Points.AddXY(dataPoints[i].Date, (sizeOfAverage == 10) ? dataPoints[i].BBUpper10 : dataPoints[i].BBUpper30);
+                    Chart.Series["BBLower" + sizeOfAverage].Points.AddXY(dataPoints[i].Date, (sizeOfAverage == 10) ? dataPoints[i].BBLower10 : dataPoints[i].BBLower30);
                 }
             }
         }

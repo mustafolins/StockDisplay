@@ -41,7 +41,7 @@ namespace StockDisplay
             int size = int.Parse(ChartLength.SelectedItem.ToString());
 
             // gets the s&p 500 data points
-            var spxPoints = Fetch.GetStockPoints(true, size);
+            var spxPoints = Fetch.GetStockPoints(true, 0, size);
             CalculateTechnicalIndicators(spxPoints, true);
             LodingInfoLabel.Text = "Analyzing current market trends.";
             double spxAverage = await GetAveragePercent(spxPoints);
@@ -181,8 +181,8 @@ namespace StockDisplay
             Indicators.MovingAverage(dataPoints, "MovingAverage30", 30, isSpx);
             Indicators.StandardDeviation(dataPoints, 10);
             Indicators.StandardDeviation(dataPoints, 30);
-            Indicators.BollingerBand(dataPoints, 10);
-            Indicators.BollingerBand(dataPoints, 30);
+            Indicators.BollingerBand(dataPoints, 10, isSpx);
+            Indicators.BollingerBand(dataPoints, 30, isSpx);
         }
 
         private void AddDataPointsToCandlestickSeries(List<StockPoint> dataJPoints)
@@ -214,6 +214,10 @@ namespace StockDisplay
 
             chart1.Series["MovingAverage"].XValueType = ChartValueType.Date;
             chart1.Series["MovingAverage30"].XValueType = ChartValueType.Date;
+            chart1.Series["BBUpper10"].XValueType = ChartValueType.Date;
+            chart1.Series["BBLower10"].XValueType = ChartValueType.Date;
+            chart1.Series["BBUpper30"].XValueType = ChartValueType.Date;
+            chart1.Series["BBLower30"].XValueType = ChartValueType.Date;
 
             ChartLength.SelectedItem = ChartLength.Items[1];
 

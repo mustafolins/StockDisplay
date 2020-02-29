@@ -72,8 +72,6 @@ namespace StockDisplay
             var trainSet = trainingTestSplit.TrainingSet;
             var testSet = trainingTestSplit.TestSet;
 
-
-
             // Create the learner and learn the model.
             var learner = new RegressionRandomForestLearner(trees: 1000);
             var model = learner.Learn(trainSet.Observations, trainSet.Targets);
