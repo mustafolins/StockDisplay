@@ -32,7 +32,7 @@ namespace StockDisplay
             // show progress bar
             CurrentProgress.Show();
             // clear chart series
-            foreach (var series in chart1.Series)
+            foreach (var series in StockChart.Series)
             {
                 series.Points.Clear();
             }
@@ -105,6 +105,22 @@ namespace StockDisplay
                 if (nextPoint == null) // is friday/holiday? so get next available day
                 {
                     nextPoint = symbolPoints.FirstOrDefault(sp => sp.Date >= testSymbolPoints.Last().Date.AddDays(1));
+                }
+
+                // plot p1 guesses
+                if (P1CheckBox.Checked)
+                {
+                    StockChart.Series["P1Guesses"].Points.AddXY(nextPoint.Date, firstPred * double.Parse(testSymbolPoints.Last().Close));
+                }
+                // plot p2 guesses
+                if (P2Checkbox.Checked)
+                {
+                    StockChart.Series["P2Guesses"].Points.AddXY(nextPoint.Date, secondPred * double.Parse(testSymbolPoints.Last().Close));
+                }
+                // plot p3 guesses
+                if (P3Checkbox.Checked)
+                {
+                    StockChart.Series["P3Guesses"].Points.AddXY(nextPoint.Date, lastPred * double.Parse(testSymbolPoints.Last().Close));
                 }
 
                 // add test accuracy to the current total
@@ -188,14 +204,14 @@ namespace StockDisplay
         private void AddDataPointsToCandlestickSeries(List<StockPoint> dataJPoints)
         {
             // add the stock points to the chart
-            chart1.Series[0].Points.Clear();
+            StockChart.Series[0].Points.Clear();
             foreach (var point in dataJPoints)
             {
-                chart1.Series[0].Points.AddXY(point.Date, double.Parse(point.High), double.Parse(point.Low),
+                StockChart.Series[0].Points.AddXY(point.Date, double.Parse(point.High), double.Parse(point.Low),
                     double.Parse(point.Open), double.Parse(point.Close));
             }
             // change chart minimum area so it doesn't show all the way down to 0.0 on the Y axis
-            chart1.ChartAreas[0].AxisY.Minimum = (from point in dataJPoints
+            StockChart.ChartAreas[0].AxisY.Minimum = (from point in dataJPoints
                                                   orderby double.Parse(point.Low)
                                                   select double.Parse(point.Low) - 5).FirstOrDefault();
         }
@@ -206,22 +222,22 @@ namespace StockDisplay
             LearningUtility = new SharpLearningUtility();
 
             // set up the chart series
-            chart1.Series[0].XValueType = ChartValueType.Date;
+            StockChart.Series[0].XValueType = ChartValueType.Date;
             //chart1.Series[0].YValueMembers = "open,high,low,close";
-            chart1.Series[0].CustomProperties = "PriceDownColor=Red,PriceUpColor=Blue";
-            chart1.Series[0]["OpenCloseStyle"] = "Triangle";
-            chart1.Series[0]["ShowOpenClose"] = "Both";
+            StockChart.Series[0].CustomProperties = "PriceDownColor=Red,PriceUpColor=Blue";
+            StockChart.Series[0]["OpenCloseStyle"] = "Triangle";
+            StockChart.Series[0]["ShowOpenClose"] = "Both";
 
-            chart1.Series["MovingAverage"].XValueType = ChartValueType.Date;
-            chart1.Series["MovingAverage30"].XValueType = ChartValueType.Date;
-            chart1.Series["BBUpper10"].XValueType = ChartValueType.Date;
-            chart1.Series["BBLower10"].XValueType = ChartValueType.Date;
-            chart1.Series["BBUpper30"].XValueType = ChartValueType.Date;
-            chart1.Series["BBLower30"].XValueType = ChartValueType.Date;
+            StockChart.Series["MovingAverage"].XValueType = ChartValueType.Date;
+            StockChart.Series["MovingAverage30"].XValueType = ChartValueType.Date;
+            StockChart.Series["BBUpper10"].XValueType = ChartValueType.Date;
+            StockChart.Series["BBLower10"].XValueType = ChartValueType.Date;
+            StockChart.Series["BBUpper30"].XValueType = ChartValueType.Date;
+            StockChart.Series["BBLower30"].XValueType = ChartValueType.Date;
 
             ChartLength.SelectedItem = ChartLength.Items[1];
 
-            Indicators = new TechnicalIndicators(chart1);
+            Indicators = new TechnicalIndicators(StockChart);
         }
 
         private void SearchTextBox_TextChanged(object sender, EventArgs e)
@@ -231,6 +247,7 @@ namespace StockDisplay
 
         private void SearchButton_Click(object sender, EventArgs e)
         {
+            // search for the requested symbol
             Fetch.FindSymbol(SearchTextBox.Text);
         }
 
@@ -241,7 +258,39 @@ namespace StockDisplay
 
         private void GetAccuracyCheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            // select first accuracy option automatically on check
             AccuracyTestSize.SelectedIndex = 0;
+        }
+
+        private void BBCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            // change chart series to reflect desired choice
+            StockChart.Series["BBLower10"].Enabled = BBCheckBox.Checked;
+            StockChart.Series["BBUpper10"].Enabled = BBCheckBox.Checked;
+            StockChart.Series["BBLower30"].Enabled = BBCheckBox.Checked;
+            StockChart.Series["BBUpper30"].Enabled = BBCheckBox.Checked;
+        }
+
+        private void AveragesCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            // change chart series to reflect desired choice
+            StockChart.Series["MovingAverage"].Enabled = AveragesCheckbox.Checked;
+            StockChart.Series["MovingAverage30"].Enabled = AveragesCheckbox.Checked;
+        }
+
+        private void P1CheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            StockChart.Series["P1Guesses"].Enabled = P1CheckBox.Checked;
+        }
+
+        private void P2Checkbox_CheckedChanged(object sender, EventArgs e)
+        {
+            StockChart.Series["P2Guesses"].Enabled = P2Checkbox.Checked;
+        }
+
+        private void P3Checkbox_CheckedChanged(object sender, EventArgs e)
+        {
+            StockChart.Series["P3Guesses"].Enabled = P3Checkbox.Checked;
         }
     }
 

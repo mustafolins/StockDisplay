@@ -37,7 +37,10 @@
             System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            this.StockChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.PredictionLabel = new System.Windows.Forms.Label();
             this.TommorowPredictionLabel = new System.Windows.Forms.Label();
             this.CurrentProgress = new System.Windows.Forms.ProgressBar();
@@ -68,24 +71,29 @@
             this.AccuracyLabel = new System.Windows.Forms.Label();
             this.GetAccuracyCheckBox = new System.Windows.Forms.CheckBox();
             this.AccuracyTestSize = new System.Windows.Forms.ComboBox();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
+            this.BBCheckBox = new System.Windows.Forms.CheckBox();
+            this.AveragesCheckbox = new System.Windows.Forms.CheckBox();
+            this.P1CheckBox = new System.Windows.Forms.CheckBox();
+            this.P2Checkbox = new System.Windows.Forms.CheckBox();
+            this.P3Checkbox = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(this.StockChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern1LengthUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern2LenthUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern3LengthUpDown)).BeginInit();
             this.SuspendLayout();
             // 
-            // chart1
+            // StockChart
             // 
-            this.chart1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.StockChart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
+            this.StockChart.ChartAreas.Add(chartArea1);
             legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
             legend1.Name = "Legend1";
-            this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(12, 150);
-            this.chart1.Name = "chart1";
+            this.StockChart.Legends.Add(legend1);
+            this.StockChart.Location = new System.Drawing.Point(12, 197);
+            this.StockChart.Name = "StockChart";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
             series1.Legend = "Legend1";
@@ -127,16 +135,34 @@
             series7.Color = System.Drawing.Color.Purple;
             series7.Legend = "Legend1";
             series7.Name = "BBLower30";
-            this.chart1.Series.Add(series1);
-            this.chart1.Series.Add(series2);
-            this.chart1.Series.Add(series3);
-            this.chart1.Series.Add(series4);
-            this.chart1.Series.Add(series5);
-            this.chart1.Series.Add(series6);
-            this.chart1.Series.Add(series7);
-            this.chart1.Size = new System.Drawing.Size(835, 305);
-            this.chart1.TabIndex = 1;
-            this.chart1.Text = "chart1";
+            series8.ChartArea = "ChartArea1";
+            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series8.Color = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            series8.Legend = "Legend1";
+            series8.Name = "P1Guesses";
+            series9.ChartArea = "ChartArea1";
+            series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series9.Color = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
+            series9.Legend = "Legend1";
+            series9.Name = "P2Guesses";
+            series10.ChartArea = "ChartArea1";
+            series10.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series10.Color = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
+            series10.Legend = "Legend1";
+            series10.Name = "P3Guesses";
+            this.StockChart.Series.Add(series1);
+            this.StockChart.Series.Add(series2);
+            this.StockChart.Series.Add(series3);
+            this.StockChart.Series.Add(series4);
+            this.StockChart.Series.Add(series5);
+            this.StockChart.Series.Add(series6);
+            this.StockChart.Series.Add(series7);
+            this.StockChart.Series.Add(series8);
+            this.StockChart.Series.Add(series9);
+            this.StockChart.Series.Add(series10);
+            this.StockChart.Size = new System.Drawing.Size(835, 258);
+            this.StockChart.TabIndex = 1;
+            this.StockChart.Text = "chart1";
             // 
             // PredictionLabel
             // 
@@ -418,7 +444,7 @@
             // AccuracyLabel
             // 
             this.AccuracyLabel.AutoSize = true;
-            this.AccuracyLabel.Location = new System.Drawing.Point(259, 128);
+            this.AccuracyLabel.Location = new System.Drawing.Point(118, 151);
             this.AccuracyLabel.Name = "AccuracyLabel";
             this.AccuracyLabel.Size = new System.Drawing.Size(55, 13);
             this.AccuracyLabel.TabIndex = 30;
@@ -427,7 +453,7 @@
             // GetAccuracyCheckBox
             // 
             this.GetAccuracyCheckBox.AutoSize = true;
-            this.GetAccuracyCheckBox.Location = new System.Drawing.Point(156, 127);
+            this.GetAccuracyCheckBox.Location = new System.Drawing.Point(15, 150);
             this.GetAccuracyCheckBox.Name = "GetAccuracyCheckBox";
             this.GetAccuracyCheckBox.Size = new System.Drawing.Size(91, 17);
             this.GetAccuracyCheckBox.TabIndex = 31;
@@ -448,11 +474,86 @@
             this.AccuracyTestSize.TabIndex = 32;
             this.AccuracyTestSize.Text = "Accuracy Test Size(%)";
             // 
+            // BBCheckBox
+            // 
+            this.BBCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BBCheckBox.AutoSize = true;
+            this.BBCheckBox.Checked = true;
+            this.BBCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.BBCheckBox.Location = new System.Drawing.Point(576, 128);
+            this.BBCheckBox.Name = "BBCheckBox";
+            this.BBCheckBox.Size = new System.Drawing.Size(99, 17);
+            this.BBCheckBox.TabIndex = 33;
+            this.BBCheckBox.Text = "Boilinger Bands";
+            this.BBCheckBox.UseVisualStyleBackColor = true;
+            this.BBCheckBox.CheckedChanged += new System.EventHandler(this.BBCheckBox_CheckedChanged);
+            // 
+            // AveragesCheckbox
+            // 
+            this.AveragesCheckbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.AveragesCheckbox.AutoSize = true;
+            this.AveragesCheckbox.Checked = true;
+            this.AveragesCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.AveragesCheckbox.Location = new System.Drawing.Point(764, 129);
+            this.AveragesCheckbox.Name = "AveragesCheckbox";
+            this.AveragesCheckbox.Size = new System.Drawing.Size(71, 17);
+            this.AveragesCheckbox.TabIndex = 34;
+            this.AveragesCheckbox.Text = "Averages";
+            this.AveragesCheckbox.UseVisualStyleBackColor = true;
+            this.AveragesCheckbox.CheckedChanged += new System.EventHandler(this.AveragesCheckbox_CheckedChanged);
+            // 
+            // P1CheckBox
+            // 
+            this.P1CheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.P1CheckBox.AutoSize = true;
+            this.P1CheckBox.Checked = true;
+            this.P1CheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.P1CheckBox.Location = new System.Drawing.Point(576, 151);
+            this.P1CheckBox.Name = "P1CheckBox";
+            this.P1CheckBox.Size = new System.Drawing.Size(113, 17);
+            this.P1CheckBox.TabIndex = 35;
+            this.P1CheckBox.Text = "Show P1 Guesses";
+            this.P1CheckBox.UseVisualStyleBackColor = true;
+            this.P1CheckBox.CheckedChanged += new System.EventHandler(this.P1CheckBox_CheckedChanged);
+            // 
+            // P2Checkbox
+            // 
+            this.P2Checkbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.P2Checkbox.AutoSize = true;
+            this.P2Checkbox.Checked = true;
+            this.P2Checkbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.P2Checkbox.Location = new System.Drawing.Point(734, 152);
+            this.P2Checkbox.Name = "P2Checkbox";
+            this.P2Checkbox.Size = new System.Drawing.Size(113, 17);
+            this.P2Checkbox.TabIndex = 36;
+            this.P2Checkbox.Text = "Show P2 Guesses";
+            this.P2Checkbox.UseVisualStyleBackColor = true;
+            this.P2Checkbox.CheckedChanged += new System.EventHandler(this.P2Checkbox_CheckedChanged);
+            // 
+            // P3Checkbox
+            // 
+            this.P3Checkbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.P3Checkbox.AutoSize = true;
+            this.P3Checkbox.Checked = true;
+            this.P3Checkbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.P3Checkbox.Location = new System.Drawing.Point(576, 174);
+            this.P3Checkbox.Name = "P3Checkbox";
+            this.P3Checkbox.Size = new System.Drawing.Size(113, 17);
+            this.P3Checkbox.TabIndex = 37;
+            this.P3Checkbox.Text = "Show P3 Guesses";
+            this.P3Checkbox.UseVisualStyleBackColor = true;
+            this.P3Checkbox.CheckedChanged += new System.EventHandler(this.P3Checkbox_CheckedChanged);
+            // 
             // StockView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(859, 510);
+            this.Controls.Add(this.P3Checkbox);
+            this.Controls.Add(this.P2Checkbox);
+            this.Controls.Add(this.P1CheckBox);
+            this.Controls.Add(this.AveragesCheckbox);
+            this.Controls.Add(this.BBCheckBox);
             this.Controls.Add(this.AccuracyTestSize);
             this.Controls.Add(this.GetAccuracyCheckBox);
             this.Controls.Add(this.AccuracyLabel);
@@ -483,11 +584,11 @@
             this.Controls.Add(this.CurrentProgress);
             this.Controls.Add(this.TommorowPredictionLabel);
             this.Controls.Add(this.PredictionLabel);
-            this.Controls.Add(this.chart1);
+            this.Controls.Add(this.StockChart);
             this.Name = "StockView";
             this.Text = "Stock Display";
             this.Load += new System.EventHandler(this.StockView_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.StockChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern1LengthUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern2LenthUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pattern3LengthUpDown)).EndInit();
@@ -497,7 +598,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        private System.Windows.Forms.DataVisualization.Charting.Chart StockChart;
         public System.Windows.Forms.Label PredictionLabel;
         public System.Windows.Forms.Label TommorowPredictionLabel;
         public System.Windows.Forms.ProgressBar CurrentProgress;
@@ -528,6 +629,11 @@
         private System.Windows.Forms.Label AccuracyLabel;
         private System.Windows.Forms.CheckBox GetAccuracyCheckBox;
         private System.Windows.Forms.ComboBox AccuracyTestSize;
+        private System.Windows.Forms.CheckBox BBCheckBox;
+        private System.Windows.Forms.CheckBox AveragesCheckbox;
+        private System.Windows.Forms.CheckBox P1CheckBox;
+        private System.Windows.Forms.CheckBox P2Checkbox;
+        private System.Windows.Forms.CheckBox P3Checkbox;
     }
 }
 
