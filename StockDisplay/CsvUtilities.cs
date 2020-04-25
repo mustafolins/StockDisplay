@@ -10,10 +10,10 @@ namespace StockDisplay
 {
     public static class CsvUtilities
     {
-        public static (string, List<StockPoint>, int) CreateTrainingDataFile(
-            List<StockPoint> dataJPoints, StockView view, int sizeOfPattern)
+        public static (string fileName, List<StockPoint> stockPoints, int sizeOfPattern) CreateTrainingDataFile(
+            List<StockPoint> dataJPoints, StockView view, int sizeOfPattern, int curPattern)
         {
-            var fileName = "traingdatatemp.csv";
+            var fileName = "traingdatatemp" + curPattern + ".csv";
             using (var sw = new StreamWriter(fileName))
             {
                 sw.WriteLine(GetCsvColumnHeader(sizeOfPattern));

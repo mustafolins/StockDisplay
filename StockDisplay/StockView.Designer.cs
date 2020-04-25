@@ -465,6 +465,7 @@
             // 
             this.AccuracyTestSize.FormattingEnabled = true;
             this.AccuracyTestSize.Items.AddRange(new object[] {
+            "2",
             "4",
             "8",
             "16"});

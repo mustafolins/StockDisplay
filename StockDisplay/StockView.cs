@@ -89,7 +89,8 @@ namespace StockDisplay
             var accuaracyTestSize = int.Parse(ChartLength.SelectedItem.ToString()) / int.Parse(AccuracyTestSize.SelectedItem.ToString());
             double first = 0.0, second = 0.0, last = 0.0;
 
-            for (int i = 1; i < accuaracyTestSize; i++)
+            // decrement here so that the predicted points are added to the right instead of left.
+            for (int i = accuaracyTestSize - 1; i > 0; i--)
             {
                 // get sub set of stock data points from full data set symbol points (excluding day being predicted)
                 testSymbolPoints = Fetch.GetSubStockPoints(i, size - i, symbolPoints);
@@ -151,30 +152,34 @@ namespace StockDisplay
             return average;
         }
 
+        /// <summary>
+        /// Gets the predictions for the three different pattern lengths.
+        /// </summary>
+        /// <param name="stockPoints">The <see cref="List{T}"/> of <see cref="StockPoint"/>s to train the AI with.</param>
+        /// <returns>The predictions for the three pattern lengths.</returns>
         private async Task<(double, double, double)> GetPredictions(List<StockPoint> stockPoints)
         {
             // get predictions using first pattern size
-            var firstResult = await Task.Run<double>(() =>
+            var firstTask = Task.Run(() =>
             {
-                return RetrieveStockDataAndTrainAI(stockPoints, (PredictionLabel, TommorowPredictionLabel), Convert.ToInt32(Pattern1LengthUpDown.Value));
+                return TrainAIAndGetPrediction(stockPoints, (PredictionLabel, TommorowPredictionLabel), Convert.ToInt32(Pattern1LengthUpDown.Value), 1);
             });
             // get predictions using second pattern size
-            var secondResult = await Task.Run<double>(() =>
+            var secondTask = Task.Run(() =>
             {
-                return RetrieveStockDataAndTrainAI(stockPoints, (PredictionLabel2, TomorrowsPredictionLabel2), Convert.ToInt32(Pattern2LenthUpDown.Value));
+                return TrainAIAndGetPrediction(stockPoints, (PredictionLabel2, TomorrowsPredictionLabel2), Convert.ToInt32(Pattern2LenthUpDown.Value), 2);
             });
             // get predictions using third pattern size
-            var thirdResult = await Task.Run<double>(() =>
+            var thirdResult = await Task.Run(() =>
             {
-                return RetrieveStockDataAndTrainAI(stockPoints, (PredictionLabel3, TomorrowsPredictionLabel3), Convert.ToInt32(Pattern3LengthUpDown.Value));
+                return TrainAIAndGetPrediction(stockPoints, (PredictionLabel3, TomorrowsPredictionLabel3), Convert.ToInt32(Pattern3LengthUpDown.Value), 3);
             });
-            return (firstResult, secondResult, thirdResult);
+            // wait for the result of the first two tasks and then return the results
+            return (await firstTask, await secondTask, thirdResult);
         }
 
-        private double RetrieveStockDataAndTrainAI(List<StockPoint> stockPoints, (Label, Label) labels, int size)
+        private double TrainAIAndGetPrediction(List<StockPoint> stockPoints, (Label today, Label tomorrow) labels, int size, int curPattern)
         {
-            // todo: add some more support for the alphavantage api
-
             if (stockPoints.Count() == 0)
             {
                 MessageBox.Show($"Stock data not found for {SymbolToLoad.Text}",
@@ -184,7 +189,7 @@ namespace StockDisplay
 
             // save csv and train ai and predict next closing price
             return LearningUtility.PredictNextDataPoint(
-                CsvUtilities.CreateTrainingDataFile(stockPoints, this, size), (labels.Item1, labels.Item2));
+                CsvUtilities.CreateTrainingDataFile(stockPoints, this, size, curPattern), (labels.today, labels.tomorrow), curPattern);
         }
 
         private void CalculateTechnicalIndicators(List<StockPoint> dataPoints, bool isSpx = false)

@@ -20,7 +20,7 @@ namespace StockDisplay
         public double TrainError { get; set; }
         public double TestError { get; set; }
 
-        public double PredictNextDataPoint((string, List<StockPoint>, int) trainingData, (Label, Label) labels)
+        public double PredictNextDataPoint((string, List<StockPoint>, int) trainingData, (Label, Label) labels, int curPattern)
         {
             // the column name in the temp data set we want to model.
             string targetName = "lastcloseperc";
@@ -34,13 +34,13 @@ namespace StockDisplay
             // from the data set. This mapping describes the relation
             // from column name to index in the feature matrix.
             var featureNameToIndex = parser.EnumerateRows(c => c != targetName)
-                .First().ColumnNameToIndex; // todo: may want to change this to the close column
+                .First().ColumnNameToIndex;
 
             // Get the variable importance from the model.
             var importances = model.GetVariableImportance(featureNameToIndex);
 
             // save the model to file for future use
-            SaveTheModel(model);
+            SaveTheModel(model, curPattern);
 
             // default format is xml.
             //var loadedModel = RegressionForestModel.Load(() => new StreamReader(@"randomforest.xml"));
@@ -57,10 +57,10 @@ namespace StockDisplay
             return Prediction;
         }
 
-        private void SaveTheModel(RegressionForestModel model)
+        private void SaveTheModel(RegressionForestModel model, int curPattern)
         {
             // default format is xml.
-            model.Save(() => new StreamWriter(@"randomforest.xml"));
+            model.Save(() => new StreamWriter(@"randomforest" + curPattern + ".xml"));
         }
 
         private RegressionForestModel TrainTheModel(double[] targets, F64Matrix observations)
