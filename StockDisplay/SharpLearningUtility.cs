@@ -36,6 +36,7 @@ namespace StockDisplay
             var featureNameToIndex = parser.EnumerateRows(c => c != targetName)
                 .First().ColumnNameToIndex;
 
+            // todo: do something with the variable importances
             // Get the variable importance from the model.
             var importances = model.GetVariableImportance(featureNameToIndex);
 

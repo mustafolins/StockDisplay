@@ -11,7 +11,7 @@ namespace StockDisplay
     public static class CsvUtilities
     {
         public static (string fileName, List<StockPoint> stockPoints, int sizeOfPattern) CreateTrainingDataFile(
-            List<StockPoint> dataJPoints, StockView view, int sizeOfPattern, int curPattern)
+            List<StockPoint> dataJPoints, ProgressBar currentProgress, int sizeOfPattern, int curPattern)
         {
             var fileName = "traingdatatemp" + curPattern + ".csv";
             using (var sw = new StreamWriter(fileName))
@@ -22,17 +22,19 @@ namespace StockDisplay
                 {
                     var point = trainablePoints[i];
                     sw.WriteLine(GetCsvDataRow(trainablePoints, i, sizeOfPattern));
-                    if (view.CurrentProgress.InvokeRequired)
+
+                    // update progress bar
+                    if (currentProgress.InvokeRequired)
                     {
-                        view.Invoke(
+                        currentProgress.Invoke(
                             new MethodInvoker(
                                 delegate () {
-                                    view.CurrentProgress.Value = (int)((double)(i + 1) / (double)(trainablePoints.Length - sizeOfPattern) * 100);
+                                    currentProgress.Value = (int)((double)(i + 1) / (double)(trainablePoints.Length - sizeOfPattern) * 100);
                                 }));
                     }
                     else
                     {
-                        view.CurrentProgress.Value = i + 1 / trainablePoints.Length - sizeOfPattern;
+                        currentProgress.Value = i + 1 / trainablePoints.Length - sizeOfPattern;
                     }
                 }
             }

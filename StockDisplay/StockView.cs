@@ -189,7 +189,7 @@ namespace StockDisplay
 
             // save csv and train ai and predict next closing price
             return LearningUtility.PredictNextDataPoint(
-                CsvUtilities.CreateTrainingDataFile(stockPoints, this, size, curPattern), (labels.today, labels.tomorrow), curPattern);
+                CsvUtilities.CreateTrainingDataFile(stockPoints, CurrentProgress, size, curPattern), (labels.today, labels.tomorrow), curPattern);
         }
 
         private void CalculateTechnicalIndicators(List<StockPoint> dataPoints, bool isSpx = false)

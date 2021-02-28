@@ -53,7 +53,7 @@ namespace StockDisplay
         {
             var request = (HttpWebRequest)WebRequest.Create(
                             $"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY" +
-                            $"&symbol={((spx) ? "SPX" : SymbolToLoad.Text)}" +
+                            $"&symbol={((spx) ? "SPXX" : SymbolToLoad.Text)}" +
                             $"&outputsize={"full"}&apikey=NBFOONK8Z8CG8J29"
                             );
             // process response

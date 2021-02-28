@@ -394,9 +394,9 @@
             this.SpxAverage.AutoSize = true;
             this.SpxAverage.Location = new System.Drawing.Point(573, 47);
             this.SpxAverage.Name = "SpxAverage";
-            this.SpxAverage.Size = new System.Drawing.Size(71, 13);
+            this.SpxAverage.Size = new System.Drawing.Size(78, 13);
             this.SpxAverage.TabIndex = 25;
-            this.SpxAverage.Text = "SPX Percent:";
+            this.SpxAverage.Text = "SPXX Percent:";
             // 
             // LodingInfoLabel
             // 
@@ -413,9 +413,9 @@
             this.InclusiveAverage.AutoSize = true;
             this.InclusiveAverage.Location = new System.Drawing.Point(573, 66);
             this.InclusiveAverage.Name = "InclusiveAverage";
-            this.InclusiveAverage.Size = new System.Drawing.Size(126, 13);
+            this.InclusiveAverage.Size = new System.Drawing.Size(133, 13);
             this.InclusiveAverage.TabIndex = 27;
-            this.InclusiveAverage.Text = "Average (Including SPX):";
+            this.InclusiveAverage.Text = "Average (Including SPXX):";
             // 
             // ChartLength
             // 
